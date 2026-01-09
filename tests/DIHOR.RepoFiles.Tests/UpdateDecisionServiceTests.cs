@@ -69,6 +69,27 @@ public sealed class UpdateDecisionServiceTests
         Assert.True(service.ShouldDownload(entry, new FileInfo(filePath), options));
     }
 
+    [Fact]
+    public void SkipsWhenDifferentAndOverwriteDisabled()
+    {
+        var tempDir = CreateTempDirectory();
+        var filePath = Path.Combine(tempDir, "file.txt");
+        File.WriteAllBytes(filePath, new byte[4]);
+        File.SetLastWriteTimeUtc(filePath, new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+
+        var entry = new ManifestEntry
+        {
+            Filename = "file.txt",
+            Size = 8,
+            ModifyDate = new DateTimeOffset(2024, 1, 2, 0, 0, 0, TimeSpan.Zero)
+        };
+
+        var service = new UpdateDecisionService();
+        var options = new DownloadOptions { Overwrite = false, SkipIfSameSizeAndDate = true };
+
+        Assert.False(service.ShouldDownload(entry, new FileInfo(filePath), options));
+    }
+
     private static string CreateTempDirectory()
     {
         var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));

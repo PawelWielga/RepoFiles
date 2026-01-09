@@ -34,6 +34,26 @@ public sealed class ManifestServiceTests
         Assert.Equal(new DateTimeOffset(2024, 1, 2, 12, 34, 56, TimeSpan.Zero), entries[1].ModifyDate);
     }
 
+    [Fact]
+    public async Task ThrowsWhenManifestRootIsNotArray()
+    {
+        var json = "{ \"filename\": \"a.txt\" }";
+        var provider = new InMemoryRepositoryProvider(json);
+        var service = new ManifestService(provider);
+
+        await Assert.ThrowsAsync<FormatException>(() => service.GetManifestAsync());
+    }
+
+    [Fact]
+    public async Task ThrowsWhenRequiredPropertyMissing()
+    {
+        var json = "[{ \"size\": 10 }]";
+        var provider = new InMemoryRepositoryProvider(json);
+        var service = new ManifestService(provider);
+
+        await Assert.ThrowsAsync<FormatException>(() => service.GetManifestAsync());
+    }
+
     private sealed class InMemoryRepositoryProvider : IRepositoryProvider
     {
         private readonly string _manifestJson;
