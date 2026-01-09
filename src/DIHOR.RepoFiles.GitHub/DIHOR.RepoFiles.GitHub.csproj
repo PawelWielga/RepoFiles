@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>DIHOR.RepoFiles.GitHub</PackageId>
+    <Description>GitHub provider for DIHOR RepoFiles.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DIHOR.RepoFiles\DIHOR.RepoFiles.csproj" />
+  </ItemGroup>
+
+</Project>

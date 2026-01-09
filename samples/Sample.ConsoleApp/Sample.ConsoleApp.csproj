@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\\..\\src\\DIHOR.RepoFiles\\DIHOR.RepoFiles.csproj" />
+    <ProjectReference Include="..\\..\\src\\DIHOR.RepoFiles.Configuration\\DIHOR.RepoFiles.Configuration.csproj" />
+    <ProjectReference Include="..\\..\\src\\DIHOR.RepoFiles.GitHub\\DIHOR.RepoFiles.GitHub.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,20 @@
+<Project>
+  <PropertyGroup>
+    <Authors>DIHOR</Authors>
+    <Company>DIHOR</Company>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/DIHOR/RepoFiles</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>dihor;repo;files;manifest;download;github</PackageTags>
+    <Version>0.1.0</Version>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="" Condition="Exists('$(MSBuildThisFileDirectory)README.md')" />
+  </ItemGroup>
+</Project>
