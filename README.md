@@ -85,3 +85,20 @@ dihor-repofiles pull data.db --dest Data
 ```
 
 The CLI reads `appsettings.json` from the current directory (or pass `--config`).
+
+## Publish to NuGet
+
+```bash
+dotnet pack -c Release
+```
+
+Push the packages to NuGet.org (repeat for each project output folder):
+
+```bash
+dotnet nuget push "src/DIHOR.RepoFiles/bin/Release/*.nupkg" -k <NUGET_API_KEY> -s https://api.nuget.org/v3/index.json --skip-duplicate
+dotnet nuget push "src/DIHOR.RepoFiles.GitHub/bin/Release/*.nupkg" -k <NUGET_API_KEY> -s https://api.nuget.org/v3/index.json --skip-duplicate
+dotnet nuget push "src/DIHOR.RepoFiles.Configuration/bin/Release/*.nupkg" -k <NUGET_API_KEY> -s https://api.nuget.org/v3/index.json --skip-duplicate
+dotnet nuget push "src/DIHOR.RepoFiles.Cli/bin/Release/*.nupkg" -k <NUGET_API_KEY> -s https://api.nuget.org/v3/index.json --skip-duplicate
+```
+
+Tip: store the key in an environment variable (`NUGET_API_KEY`) or use `dotnet nuget setapikey`.
