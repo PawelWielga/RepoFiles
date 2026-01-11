@@ -3,6 +3,10 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>DIHOR.RepoFiles.GitHub</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>DIHOR</Authors>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/DIHOR/RepoFiles</RepositoryUrl>
     <Description>GitHub provider for DIHOR RepoFiles.</Description>
   </PropertyGroup>
 
