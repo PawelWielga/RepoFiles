@@ -14,6 +14,11 @@ namespace DIHOR.RepoFiles.Services;
 
 public sealed class ManifestService
 {
+    private static readonly JsonSerializerOptions DefaultMetadataSerializerOptions = new()
+    {
+        PropertyNameCaseInsensitive = true
+    };
+
     private readonly IRepositoryProvider _provider;
 
     public ManifestService(IRepositoryProvider provider)
@@ -28,6 +33,14 @@ public sealed class ManifestService
         using var reader = new StreamReader(stream, Encoding.UTF8, true, 1024, leaveOpen: true);
         var json = await reader.ReadToEndAsync().ConfigureAwait(false);
         return ParseManifest(json);
+    }
+
+    public async Task<IReadOnlyList<ManifestEntry<TMetadata>>> GetManifestAsync<TMetadata>(JsonSerializerOptions? serializerOptions = null, CancellationToken cancellationToken = default)
+    {
+        using var stream = await _provider.OpenManifestStreamAsync(cancellationToken).ConfigureAwait(false);
+        using var reader = new StreamReader(stream, Encoding.UTF8, true, 1024, leaveOpen: true);
+        var json = await reader.ReadToEndAsync().ConfigureAwait(false);
+        return ParseManifest<TMetadata>(json, serializerOptions);
     }
 
     private static IReadOnlyList<ManifestEntry> ParseManifest(string json)
@@ -52,7 +65,7 @@ public sealed class ManifestService
             var url = ReadOptionalString(element, "url");
             var size = ReadInt64(element, "size");
             var modifyDate = ReadModifyDate(element, "modifydate");
-            var note = ReadOptionalString(element, "note");
+            var metadataJson = ReadOptionalString(element, "metadata");
 
             entries.Add(new ManifestEntry
             {
@@ -60,11 +73,50 @@ public sealed class ManifestService
                 Url = url,
                 Size = size,
                 ModifyDate = modifyDate,
-                Note = note
+                MetadataJson = metadataJson
             });
         }
 
         return entries;
+    }
+
+    private static IReadOnlyList<ManifestEntry<TMetadata>> ParseManifest<TMetadata>(string json, JsonSerializerOptions? serializerOptions)
+    {
+        var entries = ParseManifest(json);
+        var typedEntries = new List<ManifestEntry<TMetadata>>(entries.Count);
+        foreach (var entry in entries)
+        {
+            typedEntries.Add(new ManifestEntry<TMetadata>
+            {
+                Filename = entry.Filename,
+                Url = entry.Url,
+                Size = entry.Size,
+                ModifyDate = entry.ModifyDate,
+                MetadataJson = entry.MetadataJson,
+                Metadata = DeserializeMetadata<TMetadata>(entry.MetadataJson, serializerOptions)
+            });
+        }
+
+        return typedEntries;
+    }
+
+    private static TMetadata? DeserializeMetadata<TMetadata>(string? metadataJson, JsonSerializerOptions? serializerOptions)
+    {
+        if (string.IsNullOrWhiteSpace(metadataJson))
+        {
+            return default;
+        }
+
+        try
+        {
+            var json = metadataJson!;
+            var options = serializerOptions ?? DefaultMetadataSerializerOptions;
+            return JsonSerializer.Deserialize<TMetadata>(json, options);
+        }
+        catch (JsonException ex)
+        {
+            throw new FormatException("Metadata JSON is invalid.", ex);
+        }
     }
 
     private static string ReadRequiredString(JsonElement element, string propertyName)

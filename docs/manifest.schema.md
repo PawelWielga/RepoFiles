@@ -6,7 +6,7 @@ Manifest is a JSON array of entries with the following fields:
 - `url` (string, optional): Absolute URL to download. If missing, provider builds a URL.
 - `size` (number, required): File size in bytes.
 - `modifydate` (string, optional): ISO-8601 date/time. Used for update decisions.
-- `note` (string, optional): Free-form description.
+- `metadata` (string, optional): JSON string with additional data for consumers to deserialize.
 
 Example:
 
@@ -17,7 +17,7 @@ Example:
     "url": "https://raw.githubusercontent.com/owner/repo/main/data.db",
     "size": 123456,
     "modifydate": "2024-01-01T12:00:00Z",
-    "note": "Optional note"
+    "metadata": "{\"minAppVersion\":\"1.2.3\",\"note\":\"Optional note\"}"
   }
 ]
 ```

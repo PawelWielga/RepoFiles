@@ -32,9 +32,21 @@ dotnet tool install -g DIHOR.RepoFiles.Cli
     "url": "https://raw.githubusercontent.com/owner/repo/main/data.db",
     "size": 123456,
     "modifydate": "2024-01-01T12:00:00Z",
-    "note": "Optional note"
+    "metadata": "{\"minAppVersion\":\"1.2.3\",\"note\":\"Optional note\"}"
   }
 ]
+```
+
+Store extra fields inside `metadata` as a serialized JSON string. To deserialize it without manual parsing:
+
+```csharp
+public sealed class FileMetadata
+{
+    public string? MinAppVersion { get; set; }
+}
+
+var entries = await client.GetManifestAsync<FileMetadata>();
+var minVersion = entries[0].Metadata?.MinAppVersion;
 ```
 
 ## Configuration (appsettings.json)

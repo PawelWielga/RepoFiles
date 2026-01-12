@@ -16,7 +16,7 @@ public sealed class ManifestServiceTests
     public async Task ParsesCaseInsensitivePropertiesAndDates()
     {
         var json = "[" +
-                   "{\"FileName\":\"a.txt\",\"URL\":\"https://example.com/a.txt\",\"SIZE\":10,\"ModifyDate\":\"2024-01-01T00:00:00Z\",\"Note\":\"First\"}," +
+                   "{\"FileName\":\"a.txt\",\"URL\":\"https://example.com/a.txt\",\"SIZE\":10,\"ModifyDate\":\"2024-01-01T00:00:00Z\",\"Metadata\":\"{\\\"minAppVersion\\\":\\\"1.2.3\\\"}\"}," +
                    "{\"filename\":\"b.txt\",\"size\":\"20\",\"modifydate\":\"2024-01-02 12:34:56\"}" +
                    "]";
 
@@ -29,9 +29,30 @@ public sealed class ManifestServiceTests
         Assert.Equal("a.txt", entries[0].Filename);
         Assert.Equal(10, entries[0].Size);
         Assert.Equal(new DateTimeOffset(2024, 1, 1, 0, 0, 0, TimeSpan.Zero), entries[0].ModifyDate);
+        Assert.Equal("{\"minAppVersion\":\"1.2.3\"}", entries[0].MetadataJson);
         Assert.Equal("b.txt", entries[1].Filename);
         Assert.Equal(20, entries[1].Size);
         Assert.Equal(new DateTimeOffset(2024, 1, 2, 12, 34, 56, TimeSpan.Zero), entries[1].ModifyDate);
+        Assert.Null(entries[1].MetadataJson);
+    }
+
+    [Fact]
+    public async Task ParsesMetadataIntoTypedEntries()
+    {
+        var json = "[" +
+                   "{\"filename\":\"a.txt\",\"size\":10,\"metadata\":\"{\\\"minAppVersion\\\":\\\"2.0\\\",\\\"isRequired\\\":true}\"}" +
+                   "]";
+
+        var provider = new InMemoryRepositoryProvider(json);
+        var service = new ManifestService(provider);
+
+        var entries = await service.GetManifestAsync<SampleMetadata>();
+
+        Assert.Single(entries);
+        Assert.Equal("a.txt", entries[0].Filename);
+        Assert.NotNull(entries[0].Metadata);
+        Assert.Equal("2.0", entries[0].Metadata!.MinAppVersion);
+        Assert.True(entries[0].Metadata!.IsRequired);
     }
 
     [Fact]
@@ -73,5 +94,12 @@ public sealed class ManifestServiceTests
         {
             return Task.FromResult<Stream>(new MemoryStream());
         }
+    }
+
+    private sealed class SampleMetadata
+    {
+        public string? MinAppVersion { get; set; }
+
+        public bool IsRequired { get; set; }
     }
 }

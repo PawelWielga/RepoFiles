@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using DIHOR.RepoFiles.Models;
@@ -8,6 +9,8 @@ namespace DIHOR.RepoFiles.Abstractions;
 public interface IRepositoryClient
 {
     Task<IReadOnlyList<ManifestEntry>> GetManifestAsync(CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<ManifestEntry<TMetadata>>> GetManifestAsync<TMetadata>(JsonSerializerOptions? serializerOptions = null, CancellationToken cancellationToken = default);
 
     Task DownloadAsync(string filename, string destinationPath, DownloadOptions? options = null, CancellationToken cancellationToken = default);
 

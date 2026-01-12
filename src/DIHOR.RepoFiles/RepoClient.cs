@@ -1,5 +1,6 @@
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using DIHOR.RepoFiles.Abstractions;
@@ -28,6 +29,11 @@ public sealed class RepoClient : IRepositoryClient
     public Task<IReadOnlyList<ManifestEntry>> GetManifestAsync(CancellationToken cancellationToken = default)
     {
         return _manifestService.GetManifestAsync(cancellationToken);
+    }
+
+    public Task<IReadOnlyList<ManifestEntry<TMetadata>>> GetManifestAsync<TMetadata>(JsonSerializerOptions? serializerOptions = null, CancellationToken cancellationToken = default)
+    {
+        return _manifestService.GetManifestAsync<TMetadata>(serializerOptions, cancellationToken);
     }
 
     public async Task DownloadAsync(string filename, string destinationPath, DownloadOptions? options = null, CancellationToken cancellationToken = default)

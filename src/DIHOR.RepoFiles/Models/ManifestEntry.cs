@@ -2,7 +2,7 @@ using System;
 
 namespace DIHOR.RepoFiles.Models;
 
-public sealed class ManifestEntry
+public class ManifestEntry
 {
     public string Filename { get; set; } = string.Empty;
 
@@ -12,5 +12,5 @@ public sealed class ManifestEntry
 
     public DateTimeOffset ModifyDate { get; set; }
 
-    public string? Note { get; set; }
+    public string? MetadataJson { get; set; }
 }

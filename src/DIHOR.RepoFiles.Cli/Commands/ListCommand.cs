@@ -16,7 +16,8 @@ internal static class ListCommand
             var date = entry.ModifyDate == DateTimeOffset.MinValue
                 ? "-"
                 : entry.ModifyDate.ToUniversalTime().ToString("u", CultureInfo.InvariantCulture);
-            Console.WriteLine($"{entry.Filename}\t{entry.Size}\t{date}\t{entry.Note}");
+            var metadata = string.IsNullOrWhiteSpace(entry.MetadataJson) ? "-" : entry.MetadataJson;
+            Console.WriteLine($"{entry.Filename}\t{entry.Size}\t{date}\t{metadata}");
         }
 
         return 0;
