@@ -25,6 +25,17 @@ public static class ConfigurationExtensions
             ManifestPath = gitHubSection["ManifestPath"] ?? "manifest.json"
         };
 
+        var gitHubPublisherSection = section.GetSection("GitHubPublisher");
+        options.GitHubPublisher = new GitHubPublisherOptions
+        {
+            Owner = gitHubPublisherSection["Owner"] ?? string.Empty,
+            Repository = gitHubPublisherSection["Repository"] ?? string.Empty,
+            Branch = gitHubPublisherSection["Branch"] ?? "main",
+            Token = gitHubPublisherSection["Token"] ?? string.Empty,
+            CommitterName = gitHubPublisherSection["CommitterName"],
+            CommitterEmail = gitHubPublisherSection["CommitterEmail"]
+        };
+
         var downloadSection = section.GetSection("Download");
         options.Download = new DownloadOptions
         {

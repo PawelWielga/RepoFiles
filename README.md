@@ -61,6 +61,14 @@ var minVersion = entries[0].Metadata?.MinAppVersion;
       "Branch": "main",
       "ManifestPath": "manifest.json"
     },
+    "GitHubPublisher": {
+      "Owner": "your-org",
+      "Repository": "your-repo",
+      "Branch": "main",
+      "Token": "github_pat_...",
+      "CommitterName": "RepoFiles Bot",
+      "CommitterEmail": "bot@your-org.com"
+    },
     "Download": {
       "TargetDirectory": "Data",
       "SkipIfSameSizeAndDate": true,
@@ -87,6 +95,39 @@ var provider = new GitHubRepositoryProvider(new GitHubRepositoryOptions
 
 var client = new RepoClient(provider);
 await client.DownloadToDirectoryAsync("data.db", "Data");
+```
+
+## Publish (GitHub)
+
+`GitHubRepositoryPublisher` uses the GitHub Contents API and requires a PAT with `contents:write`.
+
+```csharp
+using DIHOR.RepoFiles.GitHub;
+using DIHOR.RepoFiles.GitHub.Publishers;
+
+var publisher = new GitHubRepositoryPublisher(new GitHubPublisherOptions
+{
+    Owner = "your-org",
+    Repository = "your-repo",
+    Branch = "main",
+    Token = "github_pat_...",
+    CommitterName = "RepoFiles Bot",
+    CommitterEmail = "bot@your-org.com"
+});
+
+await publisher.PublishAsync("Data/manifest.json", "Distribution/manifest.json", "Update manifest");
+```
+
+DI registration:
+
+```csharp
+services.AddRepoFilesGitHubPublisher(options =>
+{
+    options.Owner = "your-org";
+    options.Repository = "your-repo";
+    options.Branch = "main";
+    options.Token = "github_pat_...";
+});
 ```
 
 ## CLI

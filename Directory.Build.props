@@ -7,7 +7,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>dihor;repo;files;manifest;download;github</PackageTags>
-    <Version>0.2.0</Version>
+    <Version>0.3.0</Version>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>

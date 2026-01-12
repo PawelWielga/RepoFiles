@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\\..\\src\\DIHOR.RepoFiles\\DIHOR.RepoFiles.csproj" />
+    <ProjectReference Include="..\\..\\src\\DIHOR.RepoFiles.GitHub\\DIHOR.RepoFiles.GitHub.csproj" />
   </ItemGroup>
 
 </Project>
