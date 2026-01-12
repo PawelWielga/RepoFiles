@@ -72,7 +72,7 @@ public sealed class GitHubRepositoryPublisher : IRepositoryPublisher, IDisposabl
 
         var commitMessage = string.IsNullOrWhiteSpace(note)
             ? $"Publish {normalizedPath}"
-            : note;
+            : note!;
 
         var sha = await TryGetShaAsync(normalizedPath, cancellationToken).ConfigureAwait(false);
 
@@ -126,12 +126,13 @@ public sealed class GitHubRepositoryPublisher : IRepositoryPublisher, IDisposabl
 
         var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
         var payload = JsonSerializer.Deserialize<GitHubContentResponse>(json, JsonOptions);
-        if (string.IsNullOrWhiteSpace(payload?.Sha))
+        var remoteSha = payload?.Sha;
+        if (string.IsNullOrWhiteSpace(remoteSha))
         {
             throw new InvalidOperationException("GitHub response did not include file SHA.");
         }
 
-        return payload.Sha;
+        return remoteSha;
     }
 
     private GitHubCommitter? BuildCommitter()
@@ -148,10 +149,12 @@ public sealed class GitHubRepositoryPublisher : IRepositoryPublisher, IDisposabl
             throw new InvalidOperationException("Both CommitterName and CommitterEmail must be set when specifying a committer.");
         }
 
+        var committerName = _options.CommitterName!;
+        var committerEmail = _options.CommitterEmail!;
         return new GitHubCommitter
         {
-            Name = _options.CommitterName,
-            Email = _options.CommitterEmail
+            Name = committerName,
+            Email = committerEmail
         };
     }
 
@@ -206,7 +209,7 @@ public sealed class GitHubRepositoryPublisher : IRepositoryPublisher, IDisposabl
         }
 
         if (response.StatusCode == HttpStatusCode.Conflict
-            || response.StatusCode == HttpStatusCode.UnprocessableEntity)
+            || (int)response.StatusCode == 422)
         {
             message = $"{message} The remote file may have changed; fetch the latest SHA and retry.";
         }
@@ -224,7 +227,7 @@ public sealed class GitHubRepositoryPublisher : IRepositoryPublisher, IDisposabl
         try
         {
             var error = JsonSerializer.Deserialize<GitHubApiError>(body, JsonOptions);
-            if (string.IsNullOrWhiteSpace(error?.Message))
+            if (error is null || string.IsNullOrWhiteSpace(error.Message))
             {
                 return null;
             }
